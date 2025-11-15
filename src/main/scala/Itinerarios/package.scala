@@ -1,4 +1,6 @@
 import Datos._
+
+import scala.annotation.tailrec
 package object Itinerarios {
 
   def vuelosPosibles(vuelosList: List[Vuelo])(vueloActual:Vuelo): List[Vuelo] = {
@@ -55,32 +57,54 @@ package object Itinerarios {
       aeropuerto <- aeropuertos
     } yield (aeropuerto.Cod, aeropuerto)).toMap
   }
+
+  @tailrec
+  def arreglarTiempos(tiempo:Int): Int = {
+    if(tiempo > 0) tiempo
+    else arreglarTiempos(tiempo + 24*60)
+  }
+
+  def tiempoUniversal(horas:Int, minutos:Int, gmt:Int):Int = {
+    horas*60 + minutos - (gmt/100)*60
+  }
+
   def tiempoVueloItinerario(aeropuertos: List[Aeropuerto])(itinerario: Itinerario): Int = {
     val mapAero = mapaAeropuertos(aeropuertos)
     (for {
       vuelo <- itinerario
       aeropuertoSalida = mapAero(vuelo.Org)
       aeropuertoLlegada = mapAero(vuelo.Dst)
-      tiempoSalida = vuelo.HS*60 + vuelo.MS - (aeropuertoSalida.GMT/100)*60
-      tiempoLlegada = vuelo.HL*60 + vuelo.ML - (aeropuertoLlegada.GMT/100)*60
-    } yield (tiempoLlegada - tiempoSalida)).fold(0)((x:Int,y:Int)=> x+y)
+      tiempoSalida = tiempoUniversal(vuelo.HS, vuelo.MS, aeropuertoSalida.GMT)
+      tiempoLlegada = tiempoUniversal(vuelo.HL, vuelo.ML, aeropuertoSalida.GMT)
+    } yield (arreglarTiempos(tiempoLlegada - tiempoSalida))).sum
   }
 
   def tiempoTotalItinerario(aeropuertos: List[Aeropuerto])(itinerario: Itinerario):Int = {
     if(itinerario.isEmpty) 0
     else {
       val mapAero = mapaAeropuertos(aeropuertos)
-      val vItinerario = itinerario.toVector
-      val primerVuelo = vItinerario(0)
-      val ultimoVuelo = vItinerario(vItinerario.length - 1)
-      val aeroOrigen = mapAero(primerVuelo.Org)
-      val aeroDestino = mapAero(ultimoVuelo.Dst)
-      val tiempoInicio = primerVuelo.HS*60 + primerVuelo.MS - (aeroOrigen.GMT/100)*60
-      val tiempoFinal = ultimoVuelo.HL*60 + ultimoVuelo.ML - (aeroDestino.GMT/100)*60
+      val primerVuelo = itinerario.head
+      val aero1Salida = mapAero(primerVuelo.Org)
+      val aero1Llegada = mapAero(primerVuelo.Dst)
+      val t1Inicio = tiempoUniversal(primerVuelo.HS, primerVuelo.MS, aero1Salida.GMT)
+      val t1Llegada = tiempoUniversal(primerVuelo.HL, primerVuelo.ML, aero1Llegada.GMT)
 
-      tiempoFinal - tiempoInicio
+      val primeraDuracion = arreglarTiempos(t1Llegada - t1Inicio)
+
+      itinerario.tail.foldLeft((t1Llegada, primeraDuracion)) {
+        case ((llegadaPrev, acc), vuelo) =>
+          val aeroSalida = mapAero(vuelo.Org)
+          val aeroLlegada = mapAero(vuelo.Dst)
+
+          val tInicio = tiempoUniversal(vuelo.HS, vuelo.MS, aeroSalida.GMT)
+          val tLlegada = tiempoUniversal(vuelo.HL, vuelo.ML, aeroLlegada.GMT)
+
+          val tiempoVuelo = arreglarTiempos(tLlegada - tInicio)
+          val tiempoEspera = arreglarTiempos(tInicio - llegadaPrev)
+
+          (tLlegada, acc + tiempoVuelo + tiempoEspera)
+      }._2
     }
-
   }
 
   def itinerariosTiempo(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):(String, String) => List[Itinerario] ={
@@ -89,7 +113,7 @@ package object Itinerarios {
       val listItinerarios = itinerarios(vuelos, aeropuertos)(org,dst)
       val ordenados = listItinerarios.sortBy(calcTiempo)
 
-      ordenados.slice(0,4)
+      ordenados.slice(0,3)
     }
   }
 }
