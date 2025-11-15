@@ -3,4 +3,11 @@ import Datos._
 
 val itineraryGenerator = itinerarios(vuelosCurso,aeropuertosCurso)
 
-itineraryGenerator("CLO", "MEX")
+val caliMexico = itineraryGenerator("CLO", "MEX")
+itineraryGenerator("CLO", "SVCS")
+
+tiempoTotalItinerario(aeropuertosCurso)(caliMexico.tail.head)
+
+val itinerarioTiempo = itinerariosTiempo(vuelosCurso, aeropuertosCurso)
+
+itinerarioTiempo("CLO", "SVO")
