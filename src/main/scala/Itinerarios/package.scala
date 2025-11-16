@@ -15,7 +15,7 @@ package object Itinerarios {
       saleTotal  = horaSalida * 60 + minSalida
       if vuelo != vueloActual
       if vuelo.Org == aeropuerto
-      if saleTotal >= llegaTotal
+      //if saleTotal >= llegaTotal
     } yield vuelo
   }
 
