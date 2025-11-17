@@ -29,18 +29,16 @@ package object Itinerarios {
       } yield vuelo
 
       def recItinerarios(vueloBase: Vuelo, visitados: Set[String]): List[Itinerario] = {
-        //Si ya se llegó al destino termina recursión
-        if (vueloBase.Dst == dst) List(List(vueloBase))
-        else {
-          //Si se retorna a un aeropuerto anterior se termina la recursión
-          if(visitados.contains(vueloBase.Dst)) List()
-          else {
-            val proxVuelos = proximosVuelos(vueloBase)
+        val proxVuelos = proximosVuelos(vueloBase)
+        proxVuelos.length match {
+          //Si ya se llegó al destino termina recursión
+          case _ if (vueloBase.Dst == dst) => List(List(vueloBase))
+          case _ if(visitados.contains(vueloBase.Dst)) => List()
+          case _ =>
             for {
               vuelo <- proxVuelos
               itinerario <- recItinerarios(vuelo, visitados + vueloBase.Dst)
             } yield vueloBase :: itinerario
-          }
         }
       }
       for{
