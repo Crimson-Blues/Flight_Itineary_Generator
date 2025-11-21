@@ -127,4 +127,61 @@ package object ItinerariosPar {
     organizarTiempos
   }
 
+  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
+    val calcEscalas: Itinerario => Int = escalasItinerario
+
+    def organizarEscalas(org: String, dst: String): List[Itinerario] = {
+      val listItinerarios = itinerariosPar(vuelos, aeropuertos)(org, dst)
+
+      def dividirItinerarios(list: List[Itinerario]): List[(Itinerario, Int)] = {
+        if (list.length < 10)
+          list.map(it => (it, calcEscalas(it)))
+        else {
+          val m = list.length / 2
+          val (l1, l2) = list.splitAt(m)
+
+          val (res1, res2) = parallel(
+            dividirItinerarios(l1),
+            dividirItinerarios(l2)
+          )
+          (res1 ++ res2).sortBy(_._2)
+        }
+      }
+
+      val ordenados = dividirItinerarios(listItinerarios)
+      primerosTres(ordenados).map(_._1)
+    }
+    organizarEscalas
+  }
+
+
+  def itinerariosAirePar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
+  (String, String) => List[Itinerario] = {
+    val tiempoVuelo: Itinerario => Int = tiempoVueloItinerario(aeropuertos)
+
+    def organizarAire(org: String, dst: String): List[Itinerario] = {
+      val listItinerarios = itinerariosPar(vuelos, aeropuertos)(org, dst)
+
+      def dividirItinerarios(list: List[Itinerario]): List[(Itinerario, Int)] = {
+        if (list.length < 10)
+          list.map(it => (it, tiempoVuelo(it)))
+        else {
+          val m = list.length / 2
+          val (l1, l2) = list.splitAt(m)
+
+          val (res1, res2) = parallel(
+            dividirItinerarios(l1),
+            dividirItinerarios(l2)
+          )
+
+          (res1 ++ res2).sortBy(_._2)
+        }
+      }
+
+      val ordenados = dividirItinerarios(listItinerarios)
+      primerosTres(ordenados).map(_._1)
+    }
+    organizarAire
+  }
+
 }

@@ -23,3 +23,32 @@ val itinerarioTiempoPar = itinerariosTiempoPar(vuelosCurso, aeropuertosCurso)
 
 itinerarioTiempo("CLO", "SVO")
 itinerarioTiempoPar("CLO", "SVO")
+
+val itsEscalasCurso= itinerariosEscalas(vuelosCurso,aeropuertosCurso)
+val itsc1 = itsEscalasCurso("MID", "SVCS")
+val itsc2 = itsEscalasCurso("CLO", "SVCS")
+val itsc3 = itsEscalasCurso("CLO", "SVO")
+val itsc4 = itsEscalasCurso("CLO", "MEX")
+val itsc5 = itsEscalasCurso("CTG", "PTY")
+
+val itsEscalasCursoPar= itinerariosEscalasPar(vuelosCurso,aeropuertosCurso)
+val itscPar1 = itsEscalasCurso("MID", "SVCS")
+val itscPar2 = itsEscalasCurso("CLO", "SVCS")
+val itscPar3 = itsEscalasCurso("CLO", "SVO")
+val itscPar4 = itsEscalasCurso("CLO", "MEX")
+val itscPar5 = itsEscalasCurso("CTG", "PTY")
+
+val itsAireCurso = itinerariosAire(vuelosCurso, aeropuertosCurso)
+val itsa1 = itsAireCurso("MID", "SVCS")
+val itsa2 = itsAireCurso("CLO", "SVCS")
+val itsa3 = itsAireCurso("CLO", "SVO")
+val itsa4 = itsAireCurso("CLO", "MEX")
+val itsa5 = itsAireCurso("CTG", "PTY")
+
+val itsAireParCurso = itinerariosAirePar(vuelosCurso, aeropuertosCurso)
+val itsaPar1 = itsAireParCurso("MID", "SVCS")
+val itsaPar2 = itsAireParCurso("CLO", "SVCS")
+val itsaPar3 = itsAireParCurso("CLO", "SVO")
+val itsaPar4 = itsAireParCurso("CLO", "MEX")
+val itsaPar5 = itsAireParCurso("CTG", "PTY")
+
