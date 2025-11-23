@@ -9,18 +9,11 @@ package object ItinerariosPar {
 
   def vuelosPosiblesPar(vuelosList: List[Vuelo])(vueloActual:Vuelo): List[Vuelo] = {
     val aeropuerto = vueloActual.Dst
-    val horaLlegada = vueloActual.HL
-    val minLlegada = vueloActual.ML
     val vVuelos = vuelosList.toVector
     (for {
       vuelo <- vVuelos.par
-      horaSalida = vuelo.HS
-      minSalida = vuelo.MS
-      llegaTotal = horaLlegada * 60 + minLlegada
-      saleTotal  = horaSalida * 60 + minSalida
       if vuelo != vueloActual
       if vuelo.Org == aeropuerto
-      //if saleTotal >= llegaTotal
     } yield vuelo).toList
   }
 
@@ -28,10 +21,6 @@ package object ItinerariosPar {
     val proximosVuelos: Vuelo => List[Vuelo] = vuelosPosiblesPar(vuelos)
 
     def generadorItinerariosPar(org: String, dst: String): List[Itinerario] = {
-      val vuelosIniciales = for {
-        vuelo <- vuelos
-        if(vuelo.Org == org)
-      } yield vuelo
 
       def recItinerariosPar(vueloBase: Vuelo, visitados: Set[String]): List[Itinerario] = {
         val proxVuelos = proximosVuelos(vueloBase)
@@ -68,6 +57,11 @@ package object ItinerariosPar {
         }
       }
 
+      val vuelosIniciales = for {
+        vuelo <- vuelos
+        if(vuelo.Org == org)
+      } yield vuelo
+
       val vuelosInit =
         if (vuelosIniciales.length >= 20) vuelosIniciales.par
         else vuelosIniciales
@@ -79,10 +73,16 @@ package object ItinerariosPar {
     generadorItinerariosPar
   }
 
+  def mapaAeropuertosPar(aeropuertos: List[Aeropuerto]): Map[String, Aeropuerto] = {
+    (for {
+      aeropuerto <- aeropuertos.par
+    } yield (aeropuerto.Cod, aeropuerto)).seq.toMap
+  }
+
   def tiempoTotalItinerarioPar(aeropuertos: List[Aeropuerto])(itinerario: Itinerario):Int = {
     if(itinerario.isEmpty) 0
     else {
-      val mapAero = mapaAeropuertos(aeropuertos)
+      val mapAero = mapaAeropuertosPar(aeropuertos)
       val precalc = itinerario.par.map { vuelo =>
         val aeroSalida = mapAero(vuelo.Org)
         val aeroLlegada = mapAero(vuelo.Dst)

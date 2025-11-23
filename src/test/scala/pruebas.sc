@@ -23,3 +23,24 @@ val itinerarioTiempoPar = itinerariosTiempoPar(vuelosCurso, aeropuertosCurso)
 
 itinerarioTiempo("CLO", "SVO")
 itinerarioTiempoPar("CLO", "SVO")
+
+
+val itineraryUSA = itinerarios(vuelosC1,aeropuertos)
+val itineraryUSApar = itinerariosPar(vuelosC1, aeropuertos)
+val timeUSA = itinerariosTiempo(vuelosC1, aeropuertos)
+
+val AtlLax = itineraryUSA("ATL", "LAX")
+val AtlLaxPar = itineraryUSApar("ATL", "LAX")
+
+AtlLax.equals(AtlLaxPar)
+
+
+for {
+  vuelo <- AtlLax
+}yield tiempoTotalItinerario(aeropuertos)(vuelo)
+
+val time = timeUSA("ATL", "LAX")
+
+for {
+  vuelo <- time
+}yield tiempoTotalItinerario(aeropuertos)(vuelo)

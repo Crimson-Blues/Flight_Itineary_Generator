@@ -5,17 +5,10 @@ package object Itinerarios {
 
   def vuelosPosibles(vuelosList: List[Vuelo])(vueloActual:Vuelo): List[Vuelo] = {
     val aeropuerto = vueloActual.Dst
-    val horaLlegada = vueloActual.HL
-    val minLlegada = vueloActual.ML
     for {
       vuelo <- vuelosList
-      horaSalida = vuelo.HS
-      minSalida = vuelo.MS
-      llegaTotal = horaLlegada * 60 + minLlegada
-      saleTotal  = horaSalida * 60 + minSalida
       if vuelo != vueloActual
       if vuelo.Org == aeropuerto
-      //if saleTotal >= llegaTotal
     } yield vuelo
   }
 
@@ -23,10 +16,6 @@ package object Itinerarios {
     val proximosVuelos: Vuelo => List[Vuelo] = vuelosPosibles(vuelos)
 
     def generadorItinerarios(org: String, dst: String) = {
-      val vuelosIniciales = for {
-        vuelo <- vuelos
-        if(vuelo.Org == org)
-      } yield vuelo
 
       def recItinerarios(vueloBase: Vuelo, visitados: Set[String]): List[Itinerario] = {
         val proxVuelos = proximosVuelos(vueloBase)
@@ -41,6 +30,12 @@ package object Itinerarios {
             } yield vueloBase :: itinerario
         }
       }
+      val vuelosIniciales = for {
+        vuelo <- vuelos
+        if(vuelo.Org == org)
+      } yield vuelo
+
+
       for{
         vueloInit <- vuelosIniciales
         itinerario <- recItinerarios(vueloInit, Set(org))
@@ -105,7 +100,7 @@ package object Itinerarios {
     }
   }
 
-  def itinerariosTiempo(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):(String, String) => List[Itinerario] ={
+    def itinerariosTiempo(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):(String, String) => List[Itinerario] ={
     val calcTiempo: Itinerario => Int = tiempoTotalItinerario(aeropuertos)
     (org:String, dst:String) => {
       val listItinerarios = itinerarios(vuelos, aeropuertos)(org,dst)
