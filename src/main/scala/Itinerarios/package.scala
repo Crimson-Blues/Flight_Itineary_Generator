@@ -68,7 +68,7 @@ package object Itinerarios {
       aeropuertoSalida = mapAero(vuelo.Org)
       aeropuertoLlegada = mapAero(vuelo.Dst)
       tiempoSalida = tiempoUniversal(vuelo.HS, vuelo.MS, aeropuertoSalida.GMT)
-      tiempoLlegada = tiempoUniversal(vuelo.HL, vuelo.ML, aeropuertoSalida.GMT)
+      tiempoLlegada = tiempoUniversal(vuelo.HL, vuelo.ML, aeropuertoLlegada.GMT)
     } yield (arreglarTiempos(tiempoLlegada - tiempoSalida))).sum
   }
 
@@ -107,6 +107,34 @@ package object Itinerarios {
       val ordenados = listItinerarios.sortBy(calcTiempo)
 
       ordenados.slice(0,3)
+    }
+  }
+
+  def escalasItinerario(it: Itinerario): Int = if (it.isEmpty) 0 else (it.length - 1) + it.map(_.Esc).sum
+
+  def primerosTres[A](lista: List[A]): List[A] = lista match {
+    case a :: b :: c :: _ => List(a, b, c)
+    case a :: b :: Nil    => List(a, b)
+    case a :: Nil         => List(a)
+    case Nil              => Nil
+  }
+
+  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
+    val base = itinerarios(vuelos, aeropuertos)
+
+    (org: String, dst: String) => {
+      val ordenados = base(org, dst).sortBy(escalasItinerario)
+      primerosTres(ordenados)
+    }
+  }
+
+  def itinerariosAire(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
+    val tiempoVuelo: Itinerario => Int = tiempoVueloItinerario(aeropuertos)
+
+    (org: String, dst: String) => {
+      val itins = itinerarios(vuelos, aeropuertos)(org, dst)
+      val ordenados = itins.sortBy(tiempoVuelo)
+      primerosTres(ordenados)
     }
   }
 }
