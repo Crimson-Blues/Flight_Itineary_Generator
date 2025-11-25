@@ -30,15 +30,10 @@ package object Itinerarios {
             } yield vueloBase :: itinerario
         }
       }
-      val vuelosIniciales = for {
+      for {
         vuelo <- vuelos
         if(vuelo.Org == org)
-      } yield vuelo
-
-
-      for{
-        vueloInit <- vuelosIniciales
-        itinerario <- recItinerarios(vueloInit, Set(org))
+        itinerario <- recItinerarios(vuelo, Set(org))
       } yield itinerario
     }
 
@@ -112,19 +107,19 @@ package object Itinerarios {
 
   def escalasItinerario(it: Itinerario): Int = if (it.isEmpty) 0 else (it.length - 1) + it.map(_.Esc).sum
 
-  def primerosTres[A](lista: List[A]): List[A] = lista match {
-    case a :: b :: c :: _ => List(a, b, c)
-    case a :: b :: Nil    => List(a, b)
-    case a :: Nil         => List(a)
-    case Nil              => Nil
-  }
+//  def primerosTres[A](lista: List[A]): List[A] = lista match {
+//    case a :: b :: c :: _ => List(a, b, c)
+//    case a :: b :: Nil    => List(a, b)
+//    case a :: Nil         => List(a)
+//    case Nil              => Nil
+//  }
 
   def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
     val base = itinerarios(vuelos, aeropuertos)
 
     (org: String, dst: String) => {
       val ordenados = base(org, dst).sortBy(escalasItinerario)
-      primerosTres(ordenados)
+      ordenados.slice(0, 3)
     }
   }
 
@@ -134,7 +129,7 @@ package object Itinerarios {
     (org: String, dst: String) => {
       val itins = itinerarios(vuelos, aeropuertos)(org, dst)
       val ordenados = itins.sortBy(tiempoVuelo)
-      primerosTres(ordenados)
+      ordenados.slice(0, 3)
     }
   }
 }

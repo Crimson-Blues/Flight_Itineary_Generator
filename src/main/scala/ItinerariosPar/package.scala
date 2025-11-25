@@ -121,7 +121,7 @@ package object ItinerariosPar {
         listadoTiempos.sortBy(_._2)
       }
 
-      dividirItinerarios(listItinerarios).slice(0,3).map(x => x._1)
+      dividirItinerarios(listItinerarios).slice(0,3).map(_._1)
     }
 
     organizarTiempos
@@ -149,7 +149,7 @@ package object ItinerariosPar {
       }
 
       val ordenados = dividirItinerarios(listItinerarios)
-      primerosTres(ordenados).map(_._1)
+      ordenados.slice(0, 3).map(_._1)
     }
     organizarEscalas
   }
@@ -179,7 +179,7 @@ package object ItinerariosPar {
       }
 
       val ordenados = dividirItinerarios(listItinerarios)
-      primerosTres(ordenados).map(_._1)
+      ordenados.slice(0, 3).map(_._1)
     }
     organizarAire
   }
