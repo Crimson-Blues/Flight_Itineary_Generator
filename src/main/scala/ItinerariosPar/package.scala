@@ -57,17 +57,10 @@ package object ItinerariosPar {
         }
       }
 
-      val vuelosIniciales = for {
-        vuelo <- vuelos
+      (for {
+        vuelo <- vuelos.par
         if(vuelo.Org == org)
-      } yield vuelo
-
-      val vuelosInit =
-        if (vuelosIniciales.length >= 20) vuelosIniciales.par
-        else vuelosIniciales
-      (for{
-        vueloInit <- vuelosInit
-        itinerario <- recItinerariosPar(vueloInit, Set(org))
+        itinerario <- recItinerariosPar(vuelo, Set(org))
       } yield itinerario).toList
     }
     generadorItinerariosPar
@@ -105,7 +98,7 @@ package object ItinerariosPar {
 
   def itinerariosTiempoPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):(String, String) => List[Itinerario] ={
     val calcTiempo: Itinerario => Int = tiempoTotalItinerarioPar(aeropuertos)
-    def organizarTiempos(org:String, dst:String): List[Itinerario] = {
+    (org:String, dst:String) => {
       val listItinerarios = itinerariosPar(vuelos, aeropuertos)(org,dst)
 
       def dividirItinerarios(listItinerarios:List[Itinerario]): List[(Itinerario, Int)] = {
@@ -123,8 +116,6 @@ package object ItinerariosPar {
 
       dividirItinerarios(listItinerarios).slice(0,3).map(_._1)
     }
-
-    organizarTiempos
   }
 
   def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
