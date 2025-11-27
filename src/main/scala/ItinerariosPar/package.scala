@@ -180,22 +180,22 @@ package object ItinerariosPar {
 
     val mapaAero = mapaAeropuertos(aeropuertos)
 
-    def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
+    //def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
 
     def salidaItinerario(listaItinerario: Itinerario): Int = {
       val vueloInicial = listaItinerario.head
       val aero = mapaAero(vueloInicial.Org)
-      hora(vueloInicial.HS, vueloInicial.MS, aero.GMT)
+      tiempoUniversal(vueloInicial.HS, vueloInicial.MS, aero.GMT)
     }
 
     def llegadaItinerario(listaItinerario: Itinerario): Int = {
       val vueloFinal = listaItinerario.last
       val aero = mapaAero(vueloFinal.Dst)
-      hora(vueloFinal.HL, vueloFinal.ML, aero.GMT)
+      tiempoUniversal(vueloFinal.HL, vueloFinal.ML, aero.GMT)
     }
 
     def itinerarioDisponibles(itinerarios: List[Itinerario], limite: Int): List[Itinerario] =
-      if (itinerarios.length < 12)
+      if (itinerarios.length < 10)
         itinerarios.filter(it => llegadaItinerario(it) <= limite)
       else {
         val (a, b) = itinerarios.splitAt(itinerarios.length / 2)
@@ -206,14 +206,13 @@ package object ItinerariosPar {
     (cod1: String, cod2: String, h: Int, m: Int) => {
 
       val todos = itinerariosPar(vuelos, aeropuertos)(cod1, cod2)
-      if (todos.isEmpty) List.empty[Vuelo]
+      if (todos.isEmpty) List()
       else {
-        val horaCita = hora(h, m, mapaAero(cod2).GMT)
+        val horaCita = tiempoUniversal(h, m, mapaAero(cod2).GMT)
         val validos = itinerarioDisponibles(todos, horaCita)
-        if (validos.isEmpty) List.empty[Vuelo]
+        if (validos.isEmpty) List()
         else validos.maxBy(salidaItinerario)
       }
-
     }
 
   }

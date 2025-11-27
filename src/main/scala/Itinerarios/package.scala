@@ -138,10 +138,10 @@ package object Itinerarios {
   (String, String, Int, Int) => Itinerario = {
 
     val mapaAero = mapaAeropuertos(aeropuertos)
-    def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
+    //def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
     def cita(dst: String, h: Int, m: Int): Int = {
       val gmt = mapaAero(dst).GMT
-      hora(h, m, gmt)
+      tiempoUniversal(h, m, gmt)
     }
 
     (cod1: String, cod2: String, h: Int, m: Int) => {
@@ -154,20 +154,41 @@ package object Itinerarios {
           val ultimoVuelo = it.last
           val aeropuertaLlegada = mapaAero(ultimoVuelo.Dst)
 
-          val descensoDestino = hora(ultimoVuelo.HL, ultimoVuelo.ML, aeropuertaLlegada.GMT)
+          val descensoDestino = tiempoUniversal(ultimoVuelo.HL, ultimoVuelo.ML, aeropuertaLlegada.GMT)
 
           descensoDestino <= horaCita
         }
 
       if (itinerariosValidos.isEmpty) List()
       else {
-
         itinerariosValidos.maxBy { it =>
           val primerVuelo = it.head
           val aeropuertoSalida = mapaAero(primerVuelo.Org)
 
-          hora(primerVuelo.HS, primerVuelo.MS, aeropuertoSalida.GMT)
+          tiempoUniversal(primerVuelo.HS, primerVuelo.MS, aeropuertoSalida.GMT)
         }
+      }
+    }
+  }
+
+
+  def itinerarioSalida2(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
+    val mapaAero = mapaAeropuertos(aeropuertos)
+    val calcTiempo: Itinerario => Int = tiempoTotalItinerario(aeropuertos)
+    (cod1: String, cod2: String, h: Int, m: Int) => {
+      val itinerariosDisponibles = itinerarios(vuelos, aeropuertos)(cod1, cod2)
+
+      if (itinerariosDisponibles.isEmpty) Nil
+      else {
+        val aeroDestino = mapaAero(cod2)
+        val horaCita = tiempoUniversal(h, m, aeroDestino.GMT)
+        val mejor = (for {
+          itinerario <- itinerariosDisponibles
+          ultimoVuelo = itinerario.last
+          horaLlegada = tiempoUniversal(ultimoVuelo.HL, ultimoVuelo.ML, aeroDestino.GMT)
+        } yield (itinerario, calcTiempo(itinerario) + arreglarTiempos(horaCita - horaLlegada))).minBy { case (_, tiempo) => tiempo }
+
+        mejor._1
       }
     }
   }

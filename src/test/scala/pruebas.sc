@@ -74,11 +74,19 @@ val itsaPar5 = itsAireParCurso("CTG", "PTY")
 
 
 val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
+val itSalidaCurso2 = itinerarioSalida2(vuelosCurso,aeropuertosCurso)
+
 val itSal1 = itSalidaCurso("CTG","PTY",11,40)
 val itSal2 = itSalidaCurso("CTG","PTY",11,55)
 val itSal3 = itSalidaCurso("CTG","SMR",10,30)
 val itSal4 = itSalidaCurso("CTG","PTY",10,30)
 val itSal5 = itSalidaCurso("BOG","BOG",11,30)
+
+val itSal21 = itSalidaCurso2("CTG","PTY",11,40)
+val itSal22 = itSalidaCurso2("CTG","PTY",11,55)
+val itSal23 = itSalidaCurso2("CTG","SMR",10,30)
+val itSal24 = itSalidaCurso2("CTG","PTY",10,30)
+val itSal25 = itSalidaCurso2("BOG","BOG",11,30)
 
 
 val itSalidaCursoPar = itinerarioSalidaPar(vuelosCurso, aeropuertosCurso)
