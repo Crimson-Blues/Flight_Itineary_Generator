@@ -72,3 +72,20 @@ val itsaPar3 = itsAireParCurso("CLO", "SVO")
 val itsaPar4 = itsAireParCurso("CLO", "MEX")
 val itsaPar5 = itsAireParCurso("CTG", "PTY")
 
+
+val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
+val itSal1 = itSalidaCurso("CTG","PTY",11,40)
+val itSal2 = itSalidaCurso("CTG","PTY",11,55)
+val itSal3 = itSalidaCurso("CTG","SMR",10,30)
+val itSal4 = itSalidaCurso("CTG","PTY",10,30)
+val itSal5 = itSalidaCurso("BOG","BOG",11,30)
+
+
+val itSalidaCursoPar = itinerarioSalidaPar(vuelosCurso, aeropuertosCurso)
+val itSal1 = itSalidaCursoPar("CTG","PTY",11,40)
+val itSal2 = itSalidaCursoPar("CTG","PTY",11,55)
+val itSal3 = itSalidaCursoPar("CTG","SMR",10,30)
+val itSal4 = itSalidaCursoPar("CTG", "PTY", 10, 15)
+val itSal5 = itSalidaCursoPar("YTR", "PTY", 14, 50)
+
+

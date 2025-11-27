@@ -175,4 +175,48 @@ package object ItinerariosPar {
     organizarAire
   }
 
+  def itinerarioSalidaPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
+  (String, String, Int, Int) => Itinerario = {
+
+    val mapaAero = mapaAeropuertos(aeropuertos)
+
+    def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
+
+    def salidaItinerario(listaItinerario: Itinerario): Int = {
+      val vueloInicial = listaItinerario.head
+      val aero = mapaAero(vueloInicial.Org)
+      hora(vueloInicial.HS, vueloInicial.MS, aero.GMT)
+    }
+
+    def llegadaItinerario(listaItinerario: Itinerario): Int = {
+      val vueloFinal = listaItinerario.last
+      val aero = mapaAero(vueloFinal.Dst)
+      hora(vueloFinal.HL, vueloFinal.ML, aero.GMT)
+    }
+
+    def itinerarioDisponibles(itinerarios: List[Itinerario], limite: Int): List[Itinerario] =
+      if (itinerarios.length < 12)
+        itinerarios.filter(it => llegadaItinerario(it) <= limite)
+      else {
+        val (a, b) = itinerarios.splitAt(itinerarios.length / 2)
+        val (fa, fb) = parallel(itinerarioDisponibles(a, limite), itinerarioDisponibles(b, limite))
+        fa ++ fb
+      }
+
+    (cod1: String, cod2: String, h: Int, m: Int) => {
+
+      val todos = itinerariosPar(vuelos, aeropuertos)(cod1, cod2)
+      if (todos.isEmpty) List.empty[Vuelo]
+      else {
+        val horaCita = hora(h, m, mapaAero(cod2).GMT)
+        val validos = itinerarioDisponibles(todos, horaCita)
+        if (validos.isEmpty) List.empty[Vuelo]
+        else validos.maxBy(salidaItinerario)
+      }
+
+    }
+
+  }
+
+
 }
