@@ -133,46 +133,7 @@ package object Itinerarios {
     }
   }
 
-
-  def itinerarioSalida(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
-  (String, String, Int, Int) => Itinerario = {
-
-    val mapaAero = mapaAeropuertos(aeropuertos)
-    //def hora(h: Int, m: Int, gmt: Int): Int = tiempoUniversal(h, m, gmt)
-    def cita(dst: String, h: Int, m: Int): Int = {
-      val gmt = mapaAero(dst).GMT
-      tiempoUniversal(h, m, gmt)
-    }
-
-    (cod1: String, cod2: String, h: Int, m: Int) => {
-
-      val itinerariosDisponibles = itinerarios(vuelos, aeropuertos)(cod1, cod2)
-      val horaCita = cita(cod2, h, m)
-
-      val itinerariosValidos =
-        itinerariosDisponibles.filter { it =>
-          val ultimoVuelo = it.last
-          val aeropuertaLlegada = mapaAero(ultimoVuelo.Dst)
-
-          val descensoDestino = tiempoUniversal(ultimoVuelo.HL, ultimoVuelo.ML, aeropuertaLlegada.GMT)
-
-          descensoDestino <= horaCita
-        }
-
-      if (itinerariosValidos.isEmpty) List()
-      else {
-        itinerariosValidos.maxBy { it =>
-          val primerVuelo = it.head
-          val aeropuertoSalida = mapaAero(primerVuelo.Org)
-
-          tiempoUniversal(primerVuelo.HS, primerVuelo.MS, aeropuertoSalida.GMT)
-        }
-      }
-    }
-  }
-
-
-  def itinerarioSalida2(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
+  def itinerarioSalida(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
     val mapaAero = mapaAeropuertos(aeropuertos)
     val calcTiempo: Itinerario => Int = tiempoTotalItinerario(aeropuertos)
     (cod1: String, cod2: String, h: Int, m: Int) => {
