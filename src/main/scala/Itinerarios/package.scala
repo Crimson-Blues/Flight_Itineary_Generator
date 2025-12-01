@@ -30,6 +30,7 @@ package object Itinerarios {
             } yield vueloBase :: itinerario
         }
       }
+
       for {
         vuelo <- vuelos
         if(vuelo.Org == org)

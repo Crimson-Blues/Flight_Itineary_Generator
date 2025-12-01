@@ -6,6 +6,7 @@ val itineraryGenerator = itinerarios(vuelosCurso,aeropuertosCurso)
 val itineraryGeneratorPar = itinerariosPar(vuelosCurso,aeropuertosCurso)
 
 val caliMexico = itineraryGenerator("CLO", "MEX")
+itineraryGenerator("SO", "SA")
 val caliMexicoPar = itineraryGeneratorPar("CLO", "MEX")
 val caliMoscu = itineraryGenerator("CLO", "SVO")
 val caliMoscuPar = itineraryGeneratorPar("CLO", "SVO")
