@@ -29,7 +29,7 @@ package object ItinerariosPar {
           //Si se pasa de nuevo por un aeropuerto ya visitado el itinerario no es válido
           case _ if visitados.contains(vueloBase.Dst) => List()
           //Caso secuencial para cantidades pequeñas de vuelos
-          case n if n < 30 =>
+          case n if n < 2 =>
             for {
               vuelo <- proxVuelos
               itinerario <- recItinerariosPar(vuelo, visitados + vueloBase.Dst)
@@ -124,7 +124,7 @@ package object ItinerariosPar {
       val listItinerarios = itinerariosPar(vuelos, aeropuertos)(org, dst)
 
       def dividirItinerarios(list: List[Itinerario]): List[(Itinerario, Int)] = {
-        if (list.length < 20)
+        if (list.length < 500)
           list.map(it => (it, calcEscalas(it)))
         else {
           val m = list.length / 2
@@ -188,7 +188,7 @@ package object ItinerariosPar {
 
     def validarItinerariosDisponibles(vuelos: List[Itinerario], horaCita: Int)
     : List[(Itinerario, Int)] = {
-      if (vuelos.length < 12)
+      if (vuelos.length < 50)
         vuelos.map(itinerario => (itinerario, itinerariosSalida(itinerario, horaCita)))
       else {
         val (a, b) = vuelos.splitAt(vuelos.length / 2)
