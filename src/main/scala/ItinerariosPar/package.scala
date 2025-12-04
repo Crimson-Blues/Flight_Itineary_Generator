@@ -2,6 +2,7 @@ import Datos._
 import common._
 import Itinerarios._
 
+import scala.annotation.tailrec
 import scala.collection.parallel.CollectionConverters._
 import scala.collection.parallel.ParSeq
 
@@ -176,8 +177,8 @@ package object ItinerariosPar {
 
   def itinerarioSalidaPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
 
-    val mapaAero = mapaAeropuertos(aeropuertos)
-    val calcTiempo: Itinerario => Int = tiempoTotalItinerario(aeropuertos)
+    val mapaAero = mapaAeropuertosPar(aeropuertos)
+    val calcTiempo: Itinerario => Int = tiempoTotalItinerarioPar(aeropuertos)
 
     def itinerariosSalida(vuelos: Itinerario, horaCita: Int): Int = {
       val vueloFinal = vuelos.last
